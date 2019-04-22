@@ -8,7 +8,6 @@ class Plugin extends Collide(Base) {
   }
 
   start () {
-
   }
 }
 
