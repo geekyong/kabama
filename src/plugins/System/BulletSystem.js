@@ -27,6 +27,7 @@ export class Bullet extends Actor(Poolable) {
 
     this.directionAngle = 0.0
     this.speed = 0.0
+    this.isDead = false
   }
 
   isAllocated () {
@@ -59,7 +60,9 @@ export class Bullet extends Actor(Poolable) {
   }
 
   act () {
-    // if (this.xPosition < 0 || this.xPosition > width || this.yPosition < 0 || this.yPosition > height) mySystem.deadBulletList.add(this);
+    if (this.xPosition < 0 || this.xPosition > window.innerWidth || this.yPosition < 0 || this.yPosition > window.innerHeight - 70) {
+      this.isDead = true
+    }
 
     // Deceleration
     if (this.speed > 3 * 30) {
@@ -114,9 +117,7 @@ export class BulletSystem {
   update (bulletPool) {
     this.currentEnemy.act()
     for (let eachBullet of this.liveBulletList) {
-      if (eachBullet !== undefined) {
-        eachBullet.act()
-      }
+      eachBullet.act()
     }
     for (let eachGun of this.gunList) {
       eachGun.act()
@@ -126,10 +127,15 @@ export class BulletSystem {
   }
 
   updateBulletList (bulletPool) {
+    for (let i in this.liveBulletList) {
+      if (this.liveBulletList[i].isDead) {
+        this.deadBulletList.push(this.liveBulletList[i])
+      }
+    }
     if (this.deadBulletList.length > 0) {
       for (let eachInstance of this.deadBulletList) {
         this.liveBulletList.splice(this.liveBulletList.indexOf(eachInstance), 1)
-        bulletPool.deallocate(eachInstance)
+        // bulletPool.deallocate(eachInstance)
       }
       this.deadBulletList = []
     }

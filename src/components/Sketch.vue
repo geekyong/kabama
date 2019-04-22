@@ -71,15 +71,18 @@ export default {
 
         fire (offsetMuzzleDirectionAngle, speedFactor) {
           let offsetAngle = !offsetMuzzleDirectionAngle ? 0 : offsetMuzzleDirectionAngle
-          let speed = !speedFactor ? 0 : speedFactor
+          let speed = !speedFactor ? 1 : speedFactor
           let newBullet = bulletPool.allocate()
+          if (newBullet === null) {
+            return
+          }
           newBullet.xPosition = this.xPosition
           newBullet.yPosition = this.yPosition
           newBullet.graphics = this.firingBulletGraphics
           newBullet.directionAngle = this.baseMuzzleDirectionAngle + offsetAngle
           newBullet.speed = this.baseMuzzleSpeed * speed
-          newBullet.rotationVelocity = 0.5 * sk.TWO_PI / 30
-          if (sk.random(1) < 0.5) newBullet.rotationVelocity = -newBullet.rotationVelocity
+          newBullet.rotationVelocity = 0.5 * Math.PI * 2 / 30
+          if (Math.random() < 0.5) newBullet.rotationVelocity = -newBullet.rotationVelocity
           mySystem.newBulletList.push(newBullet)
         }
       }

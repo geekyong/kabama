@@ -98,7 +98,7 @@ export class SpiralFireAction extends CyclicFireAction {
   }
 
   controlGun (parentEnemy, eachGun, gunIndex) {
-    let gunPositionAngle = 2 * Math.PI * gunIndex / (parentEnemy.gunList.length + 0.5 * parentEnemy.currentActionFrameCount * 2 * Math.PI / 30)
+    let gunPositionAngle = 2 * Math.PI * gunIndex / (parentEnemy.gunList.length) + 0.5 * parentEnemy.currentActionFrameCount * 2 * Math.PI / 30
     eachGun.xPosition = parentEnemy.xPosition + 160.0 * Math.cos(gunPositionAngle)
     eachGun.yPosition = parentEnemy.yPosition + 60.0 * Math.sin(gunPositionAngle)
 

@@ -1,4 +1,3 @@
-import { Bullet } from '../System/BulletSystem'
 export class Poolable {
   isAllocated () {
 
@@ -29,7 +28,7 @@ export class ObjectPool extends Poolable {
     this.temporalInstanceCount = 0
     this.allocationCount = 0
     this.poolSize = pSize || 256
-    this.pool = new Array(this.poolSize)
+    this.pool = []
     this.temporalInstanceList = new Array(this.poolSize)
   }
 
@@ -77,7 +76,8 @@ export class ObjectPool extends Poolable {
     killedObject.initialize()
     killedObject.setAllocated(false)
     killedObject.setAllocationIdentifier(-1)
-    this.index--
+    this.index -= 1
+    console.log(this.index)
     this.pool[this.index] = killedObject
   }
   storeObject (obj) {
@@ -96,11 +96,5 @@ export class ObjectPool extends Poolable {
       this.deallocate(this.temporalInstanceList[this.temporalInstanceCount])
     }
     this.temporalInstanceList = [] // not needed when array
-  }
-}
-function initializeObjectPool (poolSize) {
-  let bulletPool = new ObjectPool(poolSize)
-  for (let i = 0; i < bulletPool.poolSize; i++) {
-    bulletPool.storeObject(new Bullet())
   }
 }
