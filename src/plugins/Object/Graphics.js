@@ -5,10 +5,10 @@ class ParicleGraphics {
 }
 
 export class ColorFieldParticleGraphics extends ParicleGraphics {
-  constructor (pInst, xSize, ySize, radius, col, brushWeight, paintRepetitionCount) {
+  constructor (pInst, xSize, ySize, radius, col, brushWeight, paintRepetitionCount, avatar) {
     super()
     this.p5 = pInst
-    this.particleGraphics = createColorFieldGraphics(pInst, xSize, ySize, col, brushWeight, paintRepetitionCount)
+    this.particleGraphics = avatar || createColorFieldGraphics(pInst, xSize, ySize, col, brushWeight, paintRepetitionCount)
     this.graphicsXSize = xSize
     this.graphicsYSize = ySize
     this.graphicsRadius = radius

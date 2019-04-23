@@ -2,6 +2,7 @@ const Koa = require('koa')
 const cors = require('koa2-cors')
 const path = require('path')
 const fs = require('fs')
+const consola  = require('consola')
 const app = new Koa()
 
 app.use(cors({
@@ -42,20 +43,29 @@ function readDir (foldPath) {
   return allFiles
 }
 const data = readDir(dir)
-console.log(data)
 app.use(async (ctx, next) => {
   await next()
 
   if (!data) {
     return false
   }
+
+  const paths = []
+  for (let d of data) {
+    paths.push(d.path)
+  }
+
+  if (ctx.request.path === '/') {
+    let body = ''
+    for (let p of paths) {
+      body += `<br><a href="${p}">${p}</a></br>`
+    }
+    ctx.response.body = body
+    return
+  }
   ctx.response.type = 'text/plain'
 
   if (ctx.request.path === '/fileList') {
-    const paths = []
-    for (let d of data) {
-      paths.push(d.path)
-    }
     ctx.response.body = paths
     return
   }
@@ -68,4 +78,4 @@ app.use(async (ctx, next) => {
 })
 const port = 3000
 app.listen(port)
-console.log(`listen on ${port}`)
+consola.success(`listening on ${port}`)

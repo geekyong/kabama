@@ -57,6 +57,7 @@ export class Bullet extends Actor(Poolable) {
     this.properFrameCount = 0
     this.directionAngle = 0
     this.speed = 0
+    this.isDead = false
   }
 
   act () {
@@ -133,9 +134,10 @@ export class BulletSystem {
       }
     }
     if (this.deadBulletList.length > 0) {
-      for (let eachInstance of this.deadBulletList) {
-        this.liveBulletList.splice(this.liveBulletList.indexOf(eachInstance), 1)
-        // bulletPool.deallocate(eachInstance)
+      const tempDead = [...this.deadBulletList]
+      for (let i in this.deadBulletList) {
+        bulletPool.deallocate(tempDead[i])
+        this.liveBulletList.splice(this.liveBulletList.indexOf(this.deadBulletList[i]), 1)
       }
       this.deadBulletList = []
     }

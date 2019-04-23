@@ -5,75 +5,43 @@
       <v-layout row wrap justify-center >
         <v-flex xs2>
           <v-navigation-drawer
-            stateless
             value="true"
+            stateless
           >
             <v-list>
               <v-list-tile>
                 <v-list-tile-action>
                   <v-icon>home</v-icon>
                 </v-list-tile-action>
-                <v-list-tile-title>Home</v-list-tile-title>
+                <v-list-tile-title>Plugins</v-list-tile-title>
               </v-list-tile>
 
+              <v-divider />
               <v-list-group
-                prepend-icon="account_circle"
-                value="true"
+                no-action
+                v-model="active"
               >
-                <template>
-                  <v-list-tile>
-                    <v-list-tile-title>Users</v-list-tile-title>
-                  </v-list-tile>
-                </template>
-                <v-list-group
-                  no-action
-                  sub-group
-                  value="true"
+                <v-list-tile
+                  v-for="(plugin, i) in plugins"
+                  :key="i"
+                  @click="onClickNavigation(plugin)"
                 >
-                  <template >
-                    <v-list-tile>
-                      <v-list-tile-title>Admin</v-list-tile-title>
-                    </v-list-tile>
-                  </template>
+                  <v-list-tile-content>
+                    <v-list-tile-title v-text="plugin"></v-list-tile-title>
 
-                  <v-list-tile
-                    v-for="(admin, i) in admins"
-                    :key="i"
-                    @click="onClickNavigation(admin[0])"
-                  >
-                    <v-list-tile-title v-text="admin[0]"></v-list-tile-title>
-                    <v-list-tile-action>
-                      <v-icon v-text="admin[1]"></v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
-                </v-list-group>
+                  </v-list-tile-content>
+                  <!--<v-list-tile-action>-->
+                  <!--<v-icon v-text="crud[1]"></v-icon>-->
+                  <!--</v-list-tile-action>-->
+                </v-list-tile>
 
-                <v-list-group
-                  sub-group
-                  no-action
-                >
-                  <template>
-                    <v-list-tile>
-                      <v-list-tile-title>Actions</v-list-tile-title>
-                    </v-list-tile>
-                  </template>
-                  <v-list-tile
-                    v-for="(crud, i) in cruds"
-                    :key="i"
-                    @click="onClickNavigation(crud[0])"
-                  >
-                    <v-list-tile-title v-text="crud[0]"></v-list-tile-title>
-                    <v-list-tile-action>
-                      <v-icon v-text="crud[1]"></v-icon>
-                    </v-list-tile-action>
-                  </v-list-tile>
-                </v-list-group>
               </v-list-group>
+
             </v-list>
           </v-navigation-drawer>
         </v-flex>
         <v-flex xs10>
-          <CodeCard :text-name="textName" />
+          <CodeCard :text-name="textName" :source-code="sourceCode"/>
         </v-flex>
       </v-layout>
 
@@ -88,28 +56,53 @@ import CodeCard from '../components/CodeCard'
 export default {
   components: { CodeCard, Sketch },
   data: () => ({
-    admins: [
-      ['Management', 'people_outline'],
-      ['Settings', 'settings']
-    ],
-    cruds: [
-      ['Create', 'add'],
-      ['Read', 'insert_drive_file'],
-      ['Update', 'update'],
-      ['Delete', 'delete']
-    ],
     plugins: [],
-    textName: 'textName'
+    active: true,
+    textName: '这是一篇简介',
+    sourceCode: 'function readDir (foldPath) {\n' +
+      '  let allFiles = []\n' +
+      '  const files = fs.readdirSync(foldPath)\n' +
+      '\n' +
+      '  if (!files) {\n' +
+      '    return\n' +
+      '  }\n' +
+      '  for (let f of files) {\n' +
+      '    const stats = fs.statSync(path.join(foldPath, f))\n' +
+      '    if (!stats) continue\n' +
+      '    const thisPath = path.join(foldPath, f)\n' +
+      '    if (stats.isDirectory()) {\n' +
+      '      if (f === \'node_modules\' || f === \'dist\') {\n' +
+      '        continue\n' +
+      '      }\n' +
+      '      const child = readDir(thisPath)\n' +
+      '\n' +
+      '      allFiles = allFiles.concat(...child)\n' +
+      '    } else {\n' +
+      '      const data = fs.readFileSync(thisPath)\n' +
+      '      if (!data) continue\n' +
+      '      const reg = new RegExp(\'\\\\\\\\\', \'g\')\n' +
+      '      allFiles.push({\n' +
+      '        \'path\': thisPath.slice(thisPath.lastIndexOf(dir) + dir.length, thisPath.length).replace(reg, \'/\'),\n' +
+      '        \'data\': data\n' +
+      '      })\n' +
+      '    }\n' +
+      '  }\n' +
+      '  return allFiles\n' +
+      '}\n'
   }),
   methods: {
-    onClickNavigation (textName) {
+    async onClickNavigation (textName) {
       this.textName = textName
+      const { status, data } = await this.axios.get(this.textName)
+      if (status === 200 && data) {
+        this.sourceCode = '\n' + data
+      }
     }
   },
   async mounted () {
-    const plugins = await this.axios.get('/fileList')
-    if (plugins) {
-      this.plugins = plugins
+    const { status, data } = await this.axios.get('/fileList')
+    if (status === 200 && data) {
+      this.plugins = data
     }
   }
 }

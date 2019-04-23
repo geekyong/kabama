@@ -29,7 +29,7 @@ export class ObjectPool extends Poolable {
     this.allocationCount = 0
     this.poolSize = pSize || 256
     this.pool = []
-    this.temporalInstanceList = new Array(this.poolSize)
+    this.temporalInstanceList = []
   }
 
   /**
@@ -76,8 +76,7 @@ export class ObjectPool extends Poolable {
     killedObject.initialize()
     killedObject.setAllocated(false)
     killedObject.setAllocationIdentifier(-1)
-    this.index -= 1
-    console.log(this.index)
+    this.index--
     this.pool[this.index] = killedObject
   }
   storeObject (obj) {
@@ -91,6 +90,7 @@ export class ObjectPool extends Poolable {
   }
 
   update () {
+    console.log(this.temporalInstanceCount)
     while (this.temporalInstanceCount > 0) {
       this.temporalInstanceCount--
       this.deallocate(this.temporalInstanceList[this.temporalInstanceCount])
