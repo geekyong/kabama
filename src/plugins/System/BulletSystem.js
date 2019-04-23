@@ -1,9 +1,10 @@
 import { Poolable } from '../Object/ObjectPool'
 export const Actor = (extendClass) => class extends extendClass {
-  constructor (x, y, graphicsObject) {
+  constructor (loc, graphicsObject) {
     super()
-    this.xPosition = x
-    this.yPosition = y
+    this.location = loc
+    // this.xPosition = x
+    // this.yPosition = y
     this.graphics = graphicsObject
     this.properFrameCount = 0
     this.rotationAngle = 0
@@ -15,12 +16,12 @@ export const Actor = (extendClass) => class extends extendClass {
   }
 
   display () {
-    this.graphics.display(this.xPosition, this.yPosition, this.rotationAngle)
+    this.graphics.display(this.location.x, this.location.y, this.rotationAngle)
   }
 }
 export class Bullet extends Actor(Poolable) {
-  constructor () {
-    super(0, 0, null)
+  constructor (loc) {
+    super(loc, null)
     this.allocatedIndicator = true
     this.belongingPool = null
     this.allocationIdentifier = 0
@@ -50,8 +51,8 @@ export class Bullet extends Actor(Poolable) {
   }
   initialize () {
     this.graphics = null
-    this.xPosition = 0
-    this.yPosition = 0
+    this.location.x = 0
+    this.location.y = 0
     this.rotationAngle = 0
     this.rotationVelocity = 0
     this.properFrameCount = 0
@@ -61,7 +62,7 @@ export class Bullet extends Actor(Poolable) {
   }
 
   act () {
-    if (this.xPosition < 0 || this.xPosition > window.innerWidth || this.yPosition < 0 || this.yPosition > window.innerHeight - 70) {
+    if (this.location.x < 0 || this.location.y > window.innerWidth || this.location.y < 0 || this.location.y > window.innerHeight - 70) {
       this.isDead = true
     }
 
@@ -71,16 +72,16 @@ export class Bullet extends Actor(Poolable) {
       if (this.speed < 3.1 * 30) this.speed = 3 * 30
     }
 
-    this.xPosition += this.speed * Math.cos(this.directionAngle)
-    this.yPosition += this.speed * Math.sin(this.directionAngle)
+    this.location.x += this.speed * Math.cos(this.directionAngle)
+    this.location.y += this.speed * Math.sin(this.directionAngle)
     this.rotationAngle += this.rotationVelocity
     super.act()
   }
 }
 
 export class Enemy extends Actor(Poolable) {
-  constructor (x, y, graphicsObject) {
-    super(x, y, graphicsObject)
+  constructor (loc, graphicsObject) {
+    super(loc, graphicsObject)
     this.gunList = []
     this.actionList = []
     this.actionIndex = 0

@@ -24,6 +24,8 @@ import {
   FrontDeployGunsAction,
   ComplexFireAction
 } from '../plugins/Object/Actions'
+import Hero from '../plugins/Character/Hero'
+
 import Kabama from '../assets/Macaroon.png'
 import Doughnut from '../assets/Doughnut.png'
 import Bread from '../assets/Bread.png'
@@ -39,10 +41,11 @@ export default {
       const UNIT_ANGLE_SPEED = sk.TWO_PI / 30
       const bulletSize = 12
       const bulletType = []
+      const UNIT_SPEED = 8
       let width = window.innerWidth
       let height = window.innerHeight - 70
       let world, backgroundGraphics, bulletPool, mySystem
-      let kbm, dnd, brd
+      let kbm, dnd, brd, hero
       let bulletIterator
       sk.preload = () => {
         kbm = sk.loadImage(Kabama)
@@ -59,6 +62,7 @@ export default {
         sk.createCanvas(width, height)
         sk.frameRate(30)
         world = new World(sk, 10)
+        hero = new Hero(sk, sk.createVector(width * 0.5, height * 0.75), null, UNIT_SPEED)
         backgroundGraphics = createColorFieldGraphics(sk, width, height, sk.color(232), 100, 10)
         bulletPool = initializeBullet(2048)
         mySystem = new BulletSystem(sk, 2048)
@@ -69,9 +73,13 @@ export default {
         // sk.background('#fff')
         sk.imageMode(sk.CORNER)
         sk.image(backgroundGraphics, 0, 0)
+        mySystem.currentEnemy.location.x = sk.mouseX
+        mySystem.currentEnemy.location.y = sk.mouseY
         mySystem.update(bulletPool)
         mySystem.display()
 
+        hero.update()
+        hero.display()
         // bulletPool.update()
         // world.run()
         sk.stroke('#000')
@@ -83,8 +91,8 @@ export default {
       }
 
       class Gun extends Actor(Poolable) {
-        constructor (graphicsObject) {
-          super(0, 0, graphicsObject)
+        constructor (loc, graphicsObject) {
+          super(loc, graphicsObject)
           this.baseMuzzleDirectionAngle = Math.PI / 2
           this.baseMuzzleSpeed = 10
           this.firingBulletGraphics = null
@@ -101,8 +109,8 @@ export default {
           if (newBullet === null) {
             return
           }
-          newBullet.xPosition = this.xPosition
-          newBullet.yPosition = this.yPosition
+          newBullet.location.x = this.location.x
+          newBullet.location.y = this.location.y
           newBullet.graphics = this.firingBulletGraphics
           newBullet.directionAngle = this.baseMuzzleDirectionAngle + offsetAngle
           newBullet.speed = this.baseMuzzleSpeed * speed
@@ -115,7 +123,7 @@ export default {
       function initializeBullet (poolSize) {
         let bulletPool = new ObjectPool(poolSize)
         for (let i = 0; i < bulletPool.poolSize; i++) {
-          bulletPool.storeObject(new Bullet())
+          bulletPool.storeObject(new Bullet(sk.createVector(0, 0)))
         }
         return bulletPool
       }
@@ -123,7 +131,7 @@ export default {
       function prepareBulletHellSampleData (system, bulletIt, bulletSize) {
         // Define enemy
         let enemyGraphics = new ColorFieldParticleGraphics(sk, 32, 32, 6, sk.color('#273244'), 8, 90) // dark gray
-        let myEnemy = new Enemy(width * 0.5, height * 0.15, enemyGraphics)
+        let myEnemy = new Enemy(sk.createVector(width * 0.5, height * 0.15), enemyGraphics)
         myEnemy.rotationVelocity = 0.1 * sk.TWO_PI / 30
         system.currentEnemy = myEnemy
 
@@ -155,7 +163,7 @@ export default {
         bulletGraphicsArray[1] = new ColorFieldParticleGraphics(sk, bulletSize, bulletSize, 4, sk.color('#b00101'), 3, 50, bulletIt.next().value) // red
         bulletGraphicsArray[2] = new ColorFieldParticleGraphics(sk, bulletSize, bulletSize, 4, sk.color('#d2a908'), 3, 50, bulletIt.next().value) // yellow
         for (let i = 0; i < 6; i++) {
-          let newGun = new Gun(gunGraphics)
+          let newGun = new Gun(sk.createVector(0, 0), gunGraphics)
           newGun.firingBulletGraphics = bulletGraphicsArray[i % 3]
           newGun.rotationVelocity = 0.1 * UNIT_ANGLE_SPEED
           newGun.xPosition = myEnemy.xPosition

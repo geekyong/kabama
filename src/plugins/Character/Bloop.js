@@ -56,12 +56,6 @@ class Bloop extends SimpleCharacter {
     this.acceleration.mult(0)
     this.health -= 0.2
   }
-  borders () {
-    this.location.x = this.p5.constrain(this.location.x, 0, this.p5.width)
-    this.location.y = this.p5.constrain(this.location.y, 0, this.p5.height)
-    if (this.location.x <= 0 || this.location.x >= this.p5.width) this.acceleration.x = -this.acceleration.x
-    if (this.location.y === 0 || this.location.y >= this.p5.height) this.acceleration.y = -this.acceleration.y
-  }
   healthBar () {
     let barWidth = 50
     const barHeight = 20

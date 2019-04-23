@@ -30,8 +30,8 @@ export class MoveGunsAction extends Action {
     this.controlAllGuns(parentEnemy)
   }
   moveGun (eachGun, targetXPosition, targetYPosition, easingFactor) {
-    eachGun.xPosition += (targetXPosition - eachGun.xPosition) * 0.1
-    eachGun.yPosition += (targetYPosition - eachGun.yPosition) * 0.1
+    eachGun.location.x += (targetXPosition - eachGun.location.x) * 0.1
+    eachGun.location.y += (targetYPosition - eachGun.location.y) * 0.1
   }
 }
 
@@ -42,8 +42,8 @@ export class AroundDeployGunsAction extends MoveGunsAction {
 
   controlGun (parentEnemy, eachGun, gunIndex) {
     let gunPositionAngle = Math.PI * 2.0 * (gunIndex / parentEnemy.gunList.length)
-    let targetXPosition = parentEnemy.xPosition + 160.0 * Math.cos(gunPositionAngle)
-    let targetYPosition = parentEnemy.yPosition + 60.0 * Math.sin(gunPositionAngle)
+    let targetXPosition = parentEnemy.location.x + 160.0 * Math.cos(gunPositionAngle)
+    let targetYPosition = parentEnemy.location.y + 60.0 * Math.sin(gunPositionAngle)
     this.moveGun(eachGun, targetXPosition, targetYPosition, 0.02)
   }
 }
@@ -54,8 +54,8 @@ export class FrontDeployGunsAction extends MoveGunsAction {
   }
 
   controlGun (parentEnemy, eachGun, gunIndex) {
-    let targetXPosition = parentEnemy.xPosition + 80.0 * (gunIndex - (parentEnemy.gunList.length - 1) * 0.5)
-    let targetYPosition = parentEnemy.yPosition + 60.0
+    let targetXPosition = parentEnemy.location.x + 80.0 * (gunIndex - (parentEnemy.gunList.length - 1) * 0.5)
+    let targetYPosition = parentEnemy.location.y + 60.0
     this.moveGun(eachGun, targetXPosition, targetYPosition, 0.02)
   }
 }
@@ -77,8 +77,8 @@ export class HoldGunsAction extends MoveGunsAction {
   }
 
   controlGun (parentEnemy, eachGun, gunIndex) {
-    let targetXPosition = parentEnemy.xPosition
-    let targetYPosition = parentEnemy.yPosition
+    let targetXPosition = parentEnemy.location.x
+    let targetYPosition = parentEnemy.location.y
     this.moveGun(eachGun, targetXPosition, targetYPosition, 0.9)
   }
 }
@@ -101,8 +101,8 @@ export class SpiralFireAction extends CyclicFireAction {
 
   controlGun (parentEnemy, eachGun, gunIndex) {
     let gunPositionAngle = 2 * Math.PI * gunIndex / (parentEnemy.gunList.length) + 0.5 * parentEnemy.currentActionFrameCount * this.UNIT_ANGLE_SPEED
-    eachGun.xPosition = parentEnemy.xPosition + 160.0 * Math.cos(gunPositionAngle)
-    eachGun.yPosition = parentEnemy.yPosition + 60.0 * Math.sin(gunPositionAngle)
+    eachGun.location.x = parentEnemy.location.x + 160.0 * Math.cos(gunPositionAngle)
+    eachGun.location.y = parentEnemy.location.y + 60.0 * Math.sin(gunPositionAngle)
 
     eachGun.baseMuzzleDirectionAngle = gunPositionAngle
     if (parentEnemy.properFrameCount % this.fireIntervalFrameCount === 0) {
@@ -117,7 +117,10 @@ export class LinearFireAction extends CyclicFireAction {
   }
   controlGun (parentEnemy, eachGun, gunIndex) {
     eachGun.baseMuzzleDirectionAngle = Math.PI / 2
-    let offsetDirectionalAngle = Math.PI / 4 * Math.sin(gunIndex * 1.1 * parentEnemy.currentActionFrameCount * this.UNIT_ANGLE_SPEED)
+    let offsetDirectionalAngle = Math.random(0, Math.PI / 2) * Math.sin(gunIndex * 1.1 * parentEnemy.currentActionFrameCount * this.UNIT_ANGLE_SPEED)
+
+    eachGun.location.x = parentEnemy.location.x + 80.0 * (gunIndex - (parentEnemy.gunList.length - 1) * 0.5)
+    eachGun.location.y = parentEnemy.location.y + 60.0
 
     if (parentEnemy.currentActionFrameCount % this.fireIntervalFrameCount === 0) {
       for (let bulletCount = 0; bulletCount < 5; bulletCount++) {
@@ -135,8 +138,8 @@ export class ComplexFireAction extends CyclicFireAction {
   controlGun (parentEnemy, eachGun, gunIndex) {
     let angle = parentEnemy.currentActionFrameCount * this.UNIT_ANGLE_SPEED
     let gunAngle = Math.PI * 2 * gunIndex / parentEnemy.gunList.length + 0.1 * angle
-    eachGun.xPosition = parentEnemy.xPosition + 160.0 * Math.cos(gunAngle) * (1 + 0.5 + Math.sin(0.5 * angle))
-    eachGun.yPosition = parentEnemy.yPosition + 60.0 * Math.sin(gunAngle) * (1 + 0.5 + Math.sin(0.5 * angle))
+    eachGun.location.x = parentEnemy.location.x + 160.0 * Math.cos(gunAngle) * (1 + 0.5 + Math.sin(0.5 * angle))
+    eachGun.location.y = parentEnemy.location.y + 60.0 * Math.sin(gunAngle) * (1 + 0.5 + Math.sin(0.5 * angle))
 
     eachGun.baseMuzzleDirectionAngle = gunAngle
     if (parentEnemy.properFrameCount % this.fireIntervalFrameCount === 0) {
