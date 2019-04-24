@@ -76,6 +76,7 @@ export class ObjectPool extends Poolable {
     killedObject.initialize()
     killedObject.setAllocated(false)
     killedObject.setAllocationIdentifier(-1)
+    killedObject.type = null
     this.index--
     this.pool[this.index] = killedObject
   }

@@ -9,7 +9,26 @@ class Hero extends SimpleCharacter {
     this.rawHealth = this.health
     this.undeadCount = 0
     this.lifeNumber = 2
+    this.currentAction = null
+    this.currentActionFrameCount = 0
+    this.actionIndex = 0
+    this.actionList = []
+    this.gunList = []
   }
+
+  act () {
+    this.currentActionFrameCount++
+    this.actionList[this.actionIndex].execute(this)
+
+    if (this.currentActionFrameCount > this.currentAction.durationFrameCount) {
+      this.actionIndex = (this.actionIndex + 1) % this.actionList.length
+      this.currentAction = this.actionList[this.actionIndex]
+      this.currentActionFrameCount = 0
+    }
+
+    this.properFrameCount++
+  }
+
   applyCollideDamage (object) {
 
   }
@@ -34,6 +53,8 @@ class Hero extends SimpleCharacter {
       return
     }
     for (let obj of objects) {
+      if (obj.type === 'hero') continue
+
       const hit = this.p5.collideCircleCircle(obj.location.x, obj.location.y, 16, this.location.x, this.location.y, this.r)
 
       if (hit) {
@@ -41,7 +62,26 @@ class Hero extends SimpleCharacter {
       }
     }
   }
-  update () {
+  seek (target) {
+    let desired = this.p5.sub(target.location, this.location)
+    desired.normalize()
+    desired.mult(target.gravity * 0.008)
+    return desired
+  }
+
+  steer (targets) {
+    if (targets.length === 0) {
+      return
+    }
+
+    let forces = this.p5.createVector()
+    for (let target of targets) {
+      forces.add(this.seek(target))
+    }
+
+    this.applyForce(forces)
+  }
+  update (targets, step) {
     this.velocity.mult(0)
     this.acceleration.mult(0)
     if (this.p5.keyIsDown(87)) {
@@ -56,7 +96,9 @@ class Hero extends SimpleCharacter {
     if (this.p5.keyIsDown(68)) {
       this.applyForce(this.p5.createVector(1, 0))
     }
-
+    if (targets && step === 2) {
+      this.steer(targets)
+    }
     this.velocity.add(this.acceleration.mult(this.speed))
     this.location.add(this.velocity)
     this.borders()

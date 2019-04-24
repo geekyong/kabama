@@ -7,30 +7,15 @@ class DNA {
     this.target = []
     if (newGenes) {
       this.genes = newGenes
-    }
-
-    for (let i = 0; i < this.genes.length; i++) {
-      this.genes[i] = this.p5.random(0, 1)
+    } else {
+      for (let i = 0; i < this.genes.length; i++) {
+        this.genes[i] = this.p5.random(0, 1)
+      }
     }
   }
 
   copy () {
     return new DNA(this.p5, this.genes)
-  }
-  crossover (partner) {
-    let children = new Array(this.genes.length)
-    let crossover = this.p5.int(this.p5.random(this.genes.length))
-    for (let i = 0; i < this.genes.length; i++) {
-      if (i > crossover) children[i] = this.genes
-      else children[i] = partner.genes[i]
-    }
-    let newGenes = new DNA(this.p5, children)
-    return newGenes
-  }
-  fitness () {
-    for (let i = 0; i < this.genes.length; i++) {
-
-    }
   }
 
   mutate (m) {

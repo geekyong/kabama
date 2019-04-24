@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import World from '../plugins/World/World'
 import { createColorFieldGraphics, ColorFieldParticleGraphics } from '../plugins/Object/Graphics'
 import { Bullet, BulletSystem, Actor, Enemy } from '../plugins/System/BulletSystem'
 import UserInterface from '../plugins/System/UserInterface'
@@ -14,6 +13,7 @@ import {
   WaitAction,
   HoldGunsAction,
   LinearFireAction,
+  SimpleFireAction,
   AroundDeployGunsAction,
   SpiralFireAction,
   FrontDeployGunsAction,
@@ -37,14 +37,13 @@ export default {
       const UNIT_ANGLE_SPEED = sk.TWO_PI / 30
       const bulletSize = 12
       const bulletType = []
-      const UNIT_SPEED = 10
+      const UNIT_SPEED = 20
       const WELLS_NUMBER = 24
-      let gravityWells = []
       let width = window.innerWidth
       let height = window.innerHeight - 70
-      let world, backgroundGraphics, bulletPool, mySystem, ui, endPage
+      let backgroundGraphics, bulletPool, mySystem, ui, endPage
       let isRestartable = false
-      let kbm, dnd, brd, hero, myFont, kokoro
+      let kbm, dnd, brd, myFont, kokoro
 
       let bulletIterator
       sk.preload = () => {
@@ -63,10 +62,9 @@ export default {
       sk.setup = () => {
         sk.createCanvas(width, height)
         sk.frameRate(30)
-        world = new World(sk, 10)
         endPage = new EndPage(sk)
         ui = new UserInterface(sk)
-        hero = new Hero(sk, sk.createVector(width * 0.5, height * 0.75), null, UNIT_SPEED)
+
         backgroundGraphics = createColorFieldGraphics(sk, width, height, sk.color(232), 100, 10)
         bulletPool = initializeBullet(2048)
         mySystem = new BulletSystem(sk, 2048)
@@ -77,33 +75,19 @@ export default {
 
       sk.draw = () => {
         // 玩家控制角色死亡
-        if (hero.isDead()) {
+        if (mySystem.Hero.isDead()) {
           endPage.display(myFont)
           if (sk.keyIsPressed && isRestartable) {
-            hero.initialize()
-            hero.reduceLifeNumber()
+            mySystem.Hero.initialize()
+            mySystem.Hero.reduceLifeNumber()
             isRestartable = false
           }
           // 影逝二度
-          if (hero.isRealDead()) {
+          if (mySystem.Hero.isRealDead()) {
             window.location.href = '/'
             return
           }
           return
-        }
-        // 进入二阶段
-        if (mySystem.currentEnemy.step === 2) {
-          if (gravityWells.length === 0) {
-            for (let i = 0; i < WELLS_NUMBER; i++) {
-              gravityWells.push(new GravityWellPoints(sk, sk.createVector(sk.random(width), sk.random(height))))
-            }
-          } else {
-            for (let g of gravityWells) {
-              if (g.isDead()) {
-
-              }
-            }
-          }
         }
 
         sk.imageMode(sk.CORNER)
@@ -112,18 +96,17 @@ export default {
         mySystem.update(bulletPool)
         mySystem.display()
 
-        hero.sustainCollideDamage(mySystem.liveBulletList)
-        hero.update()
-        hero.display()
-        ui.update(hero.health / hero.rawHealth, null, hero.lifeNumber)
+        ui.update(mySystem.Hero.health / mySystem.Hero.rawHealth, mySystem.currentEnemy.health / mySystem.currentEnemy.rawHealth, mySystem.Hero.lifeNumber)
         ui.display(kokoro)
-        // bulletPool.update()
-        // world.run()
+
         sk.stroke('#000')
         sk.scribble.scribbleRect(sk.mouseX, sk.mouseY, 200, 200)
       }
 
       sk.windowResized = () => {
+        width = window.innerWidth
+        height = window.innerHeight - 70
+
         sk.setup()
       }
 
@@ -145,19 +128,25 @@ export default {
           this.rotationAngle += this.rotationVelocity
         }
 
-        fire (offsetMuzzleDirectionAngle, speedFactor) {
+        fire (offsetMuzzleDirectionAngle, speedFactor, type) {
           let offsetAngle = !offsetMuzzleDirectionAngle ? 0 : offsetMuzzleDirectionAngle
           let speed = !speedFactor ? 1 : speedFactor
           let newBullet = bulletPool.allocate()
           if (newBullet === null) {
             return
           }
+
+          if (type) {
+            newBullet.type = type
+          }
           newBullet.location.x = this.location.x
           newBullet.location.y = this.location.y
           newBullet.graphics = this.firingBulletGraphics
+
           newBullet.directionAngle = this.baseMuzzleDirectionAngle + offsetAngle
           newBullet.speed = this.baseMuzzleSpeed * speed
           newBullet.rotationVelocity = 0.5 * Math.PI * 2 / 30
+
           if (Math.random() < 0.5) newBullet.rotationVelocity = -newBullet.rotationVelocity
           mySystem.newBulletList.push(newBullet)
         }
@@ -175,10 +164,15 @@ export default {
         // Define enemy
         let enemyGraphics = new ColorFieldParticleGraphics(sk, 32, 32, 6, sk.color('#273244'), 8, 90) // dark gray
         let myEnemy = new Enemy(sk, sk.createVector(width * 0.5, height * 0.15), enemyGraphics)
+
+        let heroGraphics = new ColorFieldParticleGraphics(sk, 32, 32, 6, sk.color('#0ff'), 8, 90)
+        let hero = new Hero(sk, sk.createVector(width * 0.5, height * 0.75), null, UNIT_SPEED)
+
         myEnemy.rotationVelocity = 0.1 * sk.TWO_PI / 30
         system.currentEnemy = myEnemy
+        system.Hero = hero
 
-        // Define enemy actions
+        // Define enemy actionssa
         let initialAction = new WaitAction()
         myEnemy.currentAction = initialAction
         myEnemy.actionList.push(initialAction)
@@ -198,21 +192,38 @@ export default {
         myEnemy.actionList.push(new WaitAction())
         myEnemy.actionList.push(new HoldGunsAction())
 
+        hero.currentAction = initialAction
+        hero.actionList.push(new SimpleFireAction())
+
         // Define enemy guns
         // Colors picked from:  https://www.pinterest.jp/pin/305400418459473335/
-        let gunGraphics = new ColorFieldParticleGraphics(sk, 20, 20, 6, sk.color('#b8b1a8'), 7, 70) // gray
+        let gunGraphics = new ColorFieldParticleGraphics(sk, 12, 12, 6, sk.color('#b8b1a8'), 7, 70) // gray
         let bulletGraphicsArray = new Array(3)
         bulletGraphicsArray[0] = new ColorFieldParticleGraphics(sk, bulletSize, bulletSize, 4, sk.color('#263de2'), 3, 50, bulletIt.next().value) // blue
         bulletGraphicsArray[1] = new ColorFieldParticleGraphics(sk, bulletSize, bulletSize, 4, sk.color('#b00101'), 3, 50, bulletIt.next().value) // red
         bulletGraphicsArray[2] = new ColorFieldParticleGraphics(sk, bulletSize, bulletSize, 4, sk.color('#d2a908'), 3, 50, bulletIt.next().value) // yellow
+
+        let heroGun = new Gun(sk, hero.location, heroGraphics)
+        heroGun.firingBulletGraphics = bulletGraphicsArray[0]
+        // heroGun.rotationVelocity = 0.1 * UNIT_ANGLE_SPEED
+        heroGun.location.x = hero.location.x
+        heroGun.location.y = hero.location.y
+
+        system.gunList.push(heroGun)
+        hero.gunList.push(heroGun)
+
         for (let i = 0; i < 6; i++) {
           let newGun = new Gun(sk, sk.createVector(myEnemy.location.x, myEnemy.location.y), gunGraphics)
           newGun.firingBulletGraphics = bulletGraphicsArray[i % 3]
           newGun.rotationVelocity = 0.1 * UNIT_ANGLE_SPEED
-          newGun.xPosition = myEnemy.xPosition
-          newGun.yPosition = myEnemy.yPosition
+          newGun.location.x = myEnemy.location.x
+          newGun.location.y = myEnemy.location.y
           system.gunList.push(newGun)
           myEnemy.gunList.push(newGun)
+        }
+
+        for (let i = 0; i < WELLS_NUMBER; i++) {
+          system.gravityWells.push(new GravityWellPoints(sk, sk.createVector(sk.random(width), sk.random(height))))
         }
       }
     }

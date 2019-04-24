@@ -123,8 +123,28 @@ export class LinearFireAction extends CyclicFireAction {
     eachGun.location.y = parentEnemy.location.y + 60.0
 
     if (parentEnemy.currentActionFrameCount % this.fireIntervalFrameCount === 0) {
-      for (let bulletCount = 0; bulletCount < 5; bulletCount++) {
+      for (let bulletCount = 0; bulletCount < 10; bulletCount++) {
         eachGun.fire(offsetDirectionalAngle, 1 + 2 * bulletCount / 7)
+      }
+    }
+  }
+}
+
+export class SimpleFireAction extends CyclicFireAction {
+  constructor () {
+    super(4, 2)
+  }
+
+  controlGun (parentEnemy, eachGun, gunIndex) {
+    eachGun.baseMuzzleDirectionAngle = Math.PI / 2
+    let offsetDirectionalAngle = Math.random(0, Math.PI / 2) * Math.sin(gunIndex * 1.1 * parentEnemy.currentActionFrameCount * this.UNIT_ANGLE_SPEED)
+
+    eachGun.location.x = parentEnemy.location.x
+    eachGun.location.y = parentEnemy.location.y
+
+    if (parentEnemy.currentActionFrameCount % this.fireIntervalFrameCount === 0) {
+      for (let bulletCount = 0; bulletCount < 10; bulletCount++) {
+        eachGun.fire(offsetDirectionalAngle, -5 - 5 * bulletCount / 7, 'hero')
       }
     }
   }
@@ -143,7 +163,7 @@ export class ComplexFireAction extends CyclicFireAction {
 
     eachGun.baseMuzzleDirectionAngle = gunAngle
     if (parentEnemy.properFrameCount % this.fireIntervalFrameCount === 0) {
-      eachGun.fire(0.5 * angle, 1.5)
+      eachGun.fire(0.5 * angle, 2.5)
     }
   }
 }
