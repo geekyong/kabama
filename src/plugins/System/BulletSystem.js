@@ -1,8 +1,8 @@
-import { Poolable } from '../Object/ObjectPool'
-export const Actor = (extendClass) => class extends extendClass {
-  constructor (loc, graphicsObject) {
-    super()
-    this.location = loc
+import SimpleCharacter from '../Character/SimpleCharacter'
+export class Actor extends SimpleCharacter {
+  constructor (pInst, loc, graphicsObject) {
+    super(pInst, loc)
+    // this.location = loc
     // this.xPosition = x
     // this.yPosition = y
     this.graphics = graphicsObject
@@ -19,9 +19,9 @@ export const Actor = (extendClass) => class extends extendClass {
     this.graphics.display(this.location.x, this.location.y, this.rotationAngle)
   }
 }
-export class Bullet extends Actor(Poolable) {
-  constructor (loc) {
-    super(loc, null)
+export class Bullet extends Actor {
+  constructor (pInst, loc) {
+    super(pInst, loc, null)
     this.allocatedIndicator = true
     this.belongingPool = null
     this.allocationIdentifier = 0
@@ -29,6 +29,8 @@ export class Bullet extends Actor(Poolable) {
     this.directionAngle = 0.0
     this.speed = 0.0
     this.isDead = false
+    this.health = 50
+    this.damage = 0.3
   }
 
   isAllocated () {
@@ -79,21 +81,33 @@ export class Bullet extends Actor(Poolable) {
   }
 }
 
-export class Enemy extends Actor(Poolable) {
-  constructor (loc, graphicsObject) {
-    super(loc, graphicsObject)
+export class Enemy extends Actor {
+  constructor (pInst, loc, graphicsObject) {
+    super(pInst, loc, graphicsObject)
     this.gunList = []
     this.actionList = []
     this.actionIndex = 0
     this.currentAction = null
     this.currentActionFrameCount = 0
+    this.health = 200
+    this.rawHealth = this.health
+    this.step = 1
+    this.acceleration = this.p5.createVector(-1, 0)
   }
 
   act () {
+    this.calculateStep()
     this.rotationAngle += this.rotationVelocity
 
     this.actionList[this.actionIndex].execute(this)
     this.currentActionFrameCount++
+    if (this.step === 1 && (this.actionIndex - 2) >= 0 && (this.actionIndex - 2) % 4 === 0) {
+      this.firstStep()
+    }
+
+    if (this.step === 2) {
+      this.secondStep()
+    }
     if (this.currentActionFrameCount > this.currentAction.durationFrameCount) {
       this.actionIndex = (this.actionIndex + 1) % this.actionList.length
       this.currentAction = this.actionList[this.actionIndex]
@@ -101,6 +115,21 @@ export class Enemy extends Actor(Poolable) {
     }
 
     super.act()
+  }
+  calculateStep () {
+    this.step = this.health / this.rawHealth > 0.5 ? 1 : 2
+  }
+  secondStep () {
+
+  }
+  firstStep () {
+    this.velocity.mult(0)
+    this.acceleration.normalize()
+    this.velocity.add(this.acceleration.mult(10))
+    this.location.add(this.velocity)
+    if (this.location.x < 0 || this.location.x > this.p5.width) {
+      this.acceleration.mult(-1)
+    }
   }
 }
 

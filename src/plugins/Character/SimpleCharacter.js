@@ -1,5 +1,8 @@
-class SimpleCharacter {
+import { Poolable } from '../Object/ObjectPool'
+
+class SimpleCharacter extends Poolable {
   constructor (pInst, loc, acceleration) {
+    super()
     this.p5 = pInst
     this.location = loc
     this.acceleration = acceleration || this.p5.createVector(0, 0)
