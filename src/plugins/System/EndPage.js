@@ -11,6 +11,9 @@ class EndPage {
     this.pg.textFont(myFont)
     this.pg.fill('#f00')
     this.pg.text('菜\n', this.p5.width / 2, this.p5.height / 2)
+    this.pg.textFont('Algerian')
+    this.pg.textSize(32)
+    this.pg.text('Press "r" to Restart\n', this.p5.width / 2, this.p5.height * 0.7)
     this.p5.imageMode(this.p5.CORNER)
     this.p5.image(this.pg, 0, 0)
   }

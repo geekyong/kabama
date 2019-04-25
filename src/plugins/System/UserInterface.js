@@ -21,6 +21,9 @@ class UserInterface {
     this.p5.translate(this.p5.width / 3, this.p5.height * 0.01)
     this.p5.fill(this.p5.color(255, 0, 0, 40))
     this.p5.rect(0, 0, this.EnemyHealthPercent * this.p5.width / 3, this.barHeight)
+    this.p5.textAlign(this.p5.CENTER)
+    this.p5.textSize(32)
+    this.p5.text(`${this.p5.int(this.EnemyHealthPercent * 100)}%`, this.p5.width / 6, this.barHeight + 10)
 
     this.p5.noFill()
 
