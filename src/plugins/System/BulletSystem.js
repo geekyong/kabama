@@ -33,7 +33,7 @@ export class Bullet extends Actor {
     this.health = 50
     this.type = null
     this.damage = 3
-    this.maxSpeed = 10
+    this.maxSpeed = 20
     this.brain = new SimplePerception(pInst, 24, 0.0001)
   }
 
@@ -133,10 +133,12 @@ export class Enemy extends Actor {
     this.actionIndex = 0
     this.currentAction = null
     this.currentActionFrameCount = 0
-    this.health = 200
+    this.health = 1000
     this.rawHealth = this.health
     this.step = 1
     this.acceleration = this.p5.createVector(-1, 0)
+    this.r = graphicsObject.graphicsXSize
+    this.maxSpeed = 1
   }
 
   act (heroLocation) {
@@ -171,10 +173,20 @@ export class Enemy extends Actor {
     }
   }
   calculateStep () {
-    this.step = this.health / this.rawHealth > 0.5 ? 1 : 2
+    const percentMultTen = this.p5.int((this.health / this.rawHealth) * 10)
+    if (percentMultTen % 2 === 0) {
+      this.step = 1
+    } else {
+      this.step = 2
+    }
   }
   secondStep (heroLocation) {
-    this.location.x = heroLocation.x
+    let way = this.p5.sub(heroLocation, this.location)
+    let direction = this.p5.createVector(way.x, 0)
+    direction.normalize()
+    this.velocity.add(direction)
+    this.velocity.limit(this.maxSpeed)
+    this.location.add(this.velocity)
   }
   firstStep () {
     this.velocity.mult(0)
@@ -184,6 +196,10 @@ export class Enemy extends Actor {
     if (this.location.x < 0 || this.location.x > this.p5.width) {
       this.acceleration.mult(-1)
     }
+  }
+
+  isDead () {
+    return this.health <= 0
   }
 }
 
@@ -217,7 +233,12 @@ export class BulletSystem {
           this.gravityWells[g] = temp
         }
         this.gravityWells[g].run()
+        this.p5.stroke(this.gravityWells[g].color)
+        this.p5.strokeWeight(this.gravityWells[g].gravity)
+        this.p5.scribble.scribbleLine(this.gravityWells[g].location.x, this.gravityWells[g].location.y, this.Hero.location.x, this.Hero.location.y)
       }
+      this.p5.strokeWeight(0)
+
       this.updateGravityWellPoints()
     }
 
@@ -235,7 +256,9 @@ export class BulletSystem {
 
     this.updateBulletList(bulletPool)
     this.currentEnemy.sustainCollideDamage(this.liveBulletList)
-    this.Hero.sustainCollideDamage(this.liveBulletList)
+    if (!this.Hero.isProtected) {
+      this.Hero.sustainCollideDamage(this.liveBulletList)
+    }
     this.Hero.update(this.gravityWells, this.currentEnemy.step)
   }
 

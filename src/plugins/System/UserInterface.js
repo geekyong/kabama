@@ -19,7 +19,7 @@ class UserInterface {
     // Enemy Health Bar
     this.p5.push()
     this.p5.translate(this.p5.width / 3, this.p5.height * 0.01)
-    this.p5.fill('#f00')
+    this.p5.fill(this.p5.color(255, 0, 0, 40))
     this.p5.rect(0, 0, this.EnemyHealthPercent * this.p5.width / 3, this.barHeight)
 
     this.p5.noFill()
@@ -31,7 +31,7 @@ class UserInterface {
 
     this.p5.push()
     this.p5.translate(this.p5.width / 20, this.p5.height * 0.95)
-    this.p5.fill('#00f')
+    this.p5.fill(this.p5.color(0, 0, 255, 40))
     this.p5.rect(0, 0, this.heroHealthPercent * this.p5.width / 4, this.barHeight)
     this.p5.noFill()
     this.p5.stroke('#00f')

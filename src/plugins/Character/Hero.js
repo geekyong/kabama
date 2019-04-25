@@ -14,6 +14,7 @@ class Hero extends SimpleCharacter {
     this.actionIndex = 0
     this.actionList = []
     this.gunList = []
+    this.isProtected = false
   }
 
   act () {
@@ -35,6 +36,7 @@ class Hero extends SimpleCharacter {
 
   initialize () {
     this.health = this.rawHealth
+    this.location = this.p5.createVector(this.p5.width / 2, this.p5.height * 0.8)
     this.undeadCount += 1
     let interval = setInterval(() => {
       this.undeadCount += 1
@@ -65,7 +67,7 @@ class Hero extends SimpleCharacter {
   seek (target) {
     let desired = this.p5.sub(target.location, this.location)
     desired.normalize()
-    desired.mult(target.gravity * 0.008)
+    desired.mult(target.gravity * 0.01)
     return desired
   }
 
@@ -78,6 +80,7 @@ class Hero extends SimpleCharacter {
     for (let target of targets) {
       forces.add(this.seek(target))
     }
+    this.health = this.p5.constrain(this.health - forces.normalize().magSq() * 0.1, 0, this.rawHealth)
 
     this.applyForce(forces)
   }

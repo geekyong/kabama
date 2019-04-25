@@ -11,6 +11,7 @@ class GravityWellPoint extends SimpleCharacter {
     this.rawRadius = this.r
     this.c = 0.1
     this.gravity = this.health * this.c
+    this.color = this.p5.color(this.p5.random(255), this.p5.random(255), this.p5.random(255))
   }
   run () {
     this.update()
@@ -19,8 +20,11 @@ class GravityWellPoint extends SimpleCharacter {
 
   display () {
     this.p5.noStroke()
-    this.p5.fill(this.p5.color(0, 0, 0, 100 * this.health / this.rawHealth))
-    this.p5.ellipse(this.location.x, this.location.y, this.r, this.r)
+    this.color.setAlpha(20 * this.health / this.rawHealth)
+    // this.p5.fill(this.color)
+    // this.p5.ellipse(this.location.x, this.location.y, this.r, this.r)
+    this.p5.stroke(this.color)
+    this.p5.scribble.scribbleEllipse(this.location.x, this.location.y, this.r, this.r)
   }
   update () {
     this.health = this.p5.constrain(this.health - 1, 0, this.rawHealth)

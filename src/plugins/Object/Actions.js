@@ -143,8 +143,8 @@ export class SimpleFireAction extends CyclicFireAction {
     eachGun.location.y = parentEnemy.location.y
 
     if (parentEnemy.currentActionFrameCount % this.fireIntervalFrameCount === 0) {
-      for (let bulletCount = 0; bulletCount < 10; bulletCount++) {
-        eachGun.fire(offsetDirectionalAngle, -5 - 5 * bulletCount / 7, 'hero')
+      for (let bulletCount = 0; bulletCount < 5; bulletCount++) {
+        eachGun.fire(offsetDirectionalAngle, -2 - 2 * bulletCount / 6, 'hero')
       }
     }
   }
