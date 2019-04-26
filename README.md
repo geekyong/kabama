@@ -93,6 +93,11 @@ http://localhost:8080
 ## 总结和截图
 
 总之这是一个十分无聊的弹幕游戏，通过简单而又残酷的交互来体验双倍的快乐
+![image](https://github.com/zzh97228/kabama/blob/master/capture/capture1.jpg)
+![image](https://github.com/zzh97228/kabama/blob/master/capture/capture2.jpg)
+![image](https://github.com/zzh97228/kabama/blob/master/capture/capture3.jpg)
+![image](https://github.com/zzh97228/kabama/blob/master/capture/capture4.jpg)
+
 
 ## 参考资料
 - [https://www.openprocessing.org/sketch/450082](https://www.openprocessing.org/sketch/450082)
