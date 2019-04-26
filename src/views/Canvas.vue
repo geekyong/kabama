@@ -55,37 +55,18 @@ export default {
   data: () => ({
     plugins: [],
     active: true,
-    textName: '这是一篇简介',
-    sourceCode: 'function readDir (foldPath) {\n' +
-      '  let allFiles = []\n' +
-      '  const files = fs.readdirSync(foldPath)\n' +
+    textName: '简介',
+    sourceCode: '通过WASD移动躲避攻击，只有两条命可以复活，尽力打败这只golang地鼠吧！！！' +
       '\n' +
-      '  if (!files) {\n' +
-      '    return\n' +
-      '  }\n' +
-      '  for (let f of files) {\n' +
-      '    const stats = fs.statSync(path.join(foldPath, f))\n' +
-      '    if (!stats) continue\n' +
-      '    const thisPath = path.join(foldPath, f)\n' +
-      '    if (stats.isDirectory()) {\n' +
-      '      if (f === \'node_modules\' || f === \'dist\') {\n' +
-      '        continue\n' +
-      '      }\n' +
-      '      const child = readDir(thisPath)\n' +
       '\n' +
-      '      allFiles = allFiles.concat(...child)\n' +
-      '    } else {\n' +
-      '      const data = fs.readFileSync(thisPath)\n' +
-      '      if (!data) continue\n' +
-      '      const reg = new RegExp(\'\\\\\\\\\', \'g\')\n' +
-      '      allFiles.push({\n' +
-      '        \'path\': thisPath.slice(thisPath.lastIndexOf(dir) + dir.length, thisPath.length).replace(reg, \'/\'),\n' +
-      '        \'data\': data\n' +
-      '      })\n' +
-      '    }\n' +
-      '  }\n' +
-      '  return allFiles\n' +
-      '}\n'
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n' +
+      '\n'
   }),
   methods: {
     async onClickNavigation (textName) {

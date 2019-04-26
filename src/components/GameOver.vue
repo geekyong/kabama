@@ -25,7 +25,7 @@ export default {
   methods: {
     restart () {
       this.isOver = false
-      this.$router.push('/')
+      window.location.href = '/'
     },
     sketch (sk) {
       let width = window.innerWidth

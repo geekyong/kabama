@@ -7,12 +7,12 @@
             :src="Logo"
           />
         </v-avatar>
-        <span>KABAMA</span>
+        <span><a href="/">KABAMA</a></span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
         flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        href="https://github.com/zzh97228/kabama"
         target="_blank"
       >
         <span class="mr-2">GITHUB</span>
