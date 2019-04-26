@@ -47,7 +47,7 @@ http://localhost:8080
 
 ## 结构
 本游戏使用了vue.js作为前端框架、vuetify样式框架和p5.js图形库相结合的方式，来为用户呈现最“优质”的游戏体验。同时使用koa.js作为简单的后端应用，将后台本地的脚本呈现在前端页面上作为参考。
-
+![image](https://github.com/zzh97228/kabama/blob/master/src/assets/system.png)
 
 
 
@@ -76,11 +76,13 @@ http://localhost:8080
 
 下面我使用图例来介绍我我构成的神经网络。
 
+![image](https://github.com/zzh97228/kabama/blob/master/src/assets/nn.png)
+
 #### 简单遗传算法
 
 为了模仿自然规律中遗传和变异的特点，我为每一个重力井配置了一个DNA实例作为其特点，这个DNA实例决定了重力井的重力大小和存活时间，当重力井处于死亡状态时便会将自身的特点遗传至下一代，而下一代则根据概率决定是否变异。变异后的子代具有位置随机性、重力随机性和生命长度随机性。
 
-
+![image](https://github.com/zzh97228/kabama/blob/master/src/assets/carbon.png)
 #### 经典力学定律
 
 在游戏阶段二时地图上会随机出现重力井对玩家进行力的束缚，使得玩家无法自如操控。而这种束缚形式来源于经典物理学中合力的概念，每一个重力井对玩家造成的力会随着距离的增大而衰减
@@ -90,5 +92,9 @@ http://localhost:8080
 
 ## 总结和截图
 
+总之这是一个十分无聊的弹幕游戏，通过简单而又残酷的交互来体验双倍的快乐
 
 ## 参考资料
+- [https://www.openprocessing.org/sketch/450082](https://www.openprocessing.org/sketch/450082)
+- [https://www.openprocessing.org/sketch/605265](https://www.openprocessing.org/sketch/605265)
+- [https://www.openprocessing.org/sketch/425051](https://www.openprocessing.org/sketch/425051)

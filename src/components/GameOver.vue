@@ -39,14 +39,6 @@ export default {
       }
 
       sk.draw = () => {
-        if (sk.mouseIsPressed) {
-          let hit = sk.collidePointRect(sk.mouseX, sk.mouseY, sk.width / 2 - width / 6, sk.height * 0.15 - height / 40, width / 3, height / 20)
-          if (hit) {
-            this.isOver = false
-            window.location.href = '/'
-            return
-          }
-        }
         sk.background(242)
         sk.rectMode(sk.CENTER)
 

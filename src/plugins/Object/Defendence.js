@@ -1,7 +1,7 @@
 export class Defendence {
   constructor (pInst) {
     this.p5 = pInst
-    this.countNumber = 5
+    this.countNumber = 3
     this.frozenNumber = 5
     this.timeCount = this.countNumber
     this.frozenTime = 0
@@ -18,9 +18,6 @@ export class Defendence {
 
   update () {
     if (this.p5.frameCount % 30 < 1) {
-      console.log('timeCount: ' + this.timeCount)
-      console.log('frozenTime: ' + this.frozenTime)
-
       if (this.timeCount <= 0) {
         if (this.frozenTime >= this.frozenNumber) {
           this.timeCount = this.countNumber
