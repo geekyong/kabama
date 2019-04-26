@@ -76,6 +76,6 @@ app.use(async (ctx, next) => {
     }
   }
 })
-const port = 3000
+const port = 3333
 app.listen(port)
 consola.success(`listening on ${port}`)
