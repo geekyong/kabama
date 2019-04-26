@@ -1,5 +1,24 @@
 <template>
   <div>
+    <v-parallax
+      v-if="isProcessing"
+      dark
+      src="https://cdn.vuetifyjs.com/images/parallax/material2.jpg"
+    >
+      <v-layout
+        align-center
+        column
+        justify-center
+      >
+        <v-progress-circular
+          :size="70"
+          :width="7"
+          color="white"
+          indeterminate
+        ></v-progress-circular>
+        <h1 class="display-2 mb-3">Please be Patient</h1>
+      </v-layout>
+    </v-parallax>
     <v-p5 @sketch="sketch" />
   </div>
 </template>
@@ -47,6 +66,14 @@ export default {
       get () {
         return this.$store.state.isOver
       }
+    },
+    isProcessing: {
+      get () {
+        return this.$store.state.isProcessing
+      },
+      set (val) {
+        this.$store.state.isProcessing = val
+      }
     }
   },
   methods: {
@@ -91,6 +118,7 @@ export default {
         prepareBulletHellSampleData(mySystem, bulletIterator, bulletSize)
         mySystem.currentEnemy.location.x = width * 0.5
         mySystem.currentEnemy.location.y = height * 0.15
+        this.isProcessing = false
       }
 
       sk.draw = () => {
